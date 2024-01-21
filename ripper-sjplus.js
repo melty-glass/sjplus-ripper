@@ -1,13 +1,21 @@
+// enter in console
 url = window.location.toString().concat('.json');
 
 fetch(url)
     .then(data => data.json())
-    .then(obj => {
+    .then((obj) => {
         const pages = obj.readableProduct.pageStructure.pages;
         let n = 1;
 
         for (i of pages) {
             if (i.src) {
+                // before auto-downloading the images, set the filename first
+                // here, the order is 01, 02, 03 ... 97, 98, 99
+                // feel free to change this by changing a.download
+                n >= 10 ? g = n : g = `0${n}`;
+                const a = document.createElement('a');
+                a.download = `${g}.png`;
+
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
                 img.src = i.src;
@@ -23,48 +31,44 @@ fetch(url)
                     const c = canvas.getContext("2d");
                     c.drawImage(img, 0, 0);
 
-                    // automate this later, possibly use nested array matrix
-                    const grid12 = c.getImageData(w, 0, w, h);
-                    const grid13 = c.getImageData(2 * w, 0, w, h);
-                    const grid14 = c.getImageData(3 * w, 0, w, h);
+                    // fuck yeah matrices
+                    let grid = [
+                        [
+                            [], [], [], []], [
+                            [], [], [], []], [
+                            [], [], [], []], [
+                            [], [], [], []
+                        ]
+                    ];
 
-                    const grid21 = c.getImageData(0, h, w, h);
-                    const grid23 = c.getImageData(2 * w, h, w, h);
-                    const grid24 = c.getImageData(3 * w, h, w, h);
+                    // put width and height
+                    let hs = -h;
+                    for (i = 0; i < 4; i++) {
+                        hs += h;
+                        let ws = -w;
+                        for (j = 0; j < 4; j++) {
+                            ws += w;
+                            grid[i][j].push(ws, hs);
+                        };
+                    }; for (i = 0; i < 4; i++) {
+                        for (j = 0; j < 4; j++) {
+                            // get image data from transposed matrix
+                            
+                            // if you go to {the chapter URL}.json and click on one of the pages,
+                            // it'll be a 4x4 transposed grid of smaller images.
+                            // this loop is meant reorder & push image data in the correct cells.
+                            grid[i][j].push(c.getImageData(grid[j][i][0], grid[j][i][1], w, h));
+                        };
+                    }; for (i = 0; i < 4; i++) {
+                        for (j = 0; j < 4; j++) {
+                            c.putImageData(grid[i][j][2], grid[i][j][0], grid[i][j][1]);
+                        };
+                    };
 
-                    const grid31 = c.getImageData(0, 2 * h, w, h);
-                    const grid32 = c.getImageData(w, 2 * h, w, h);
-                    const grid34 = c.getImageData(3 * w, 2 * h, w, h);
-
-                    const grid41 = c.getImageData(0, 3 * h, w, h);
-                    const grid42 = c.getImageData(w, 3 * h, w, h);
-                    const grid43 = c.getImageData(2 * w, 3 * h, w, h);
-
-                    c.putImageData(grid21, w, 0);
-                    c.putImageData(grid31, 2 * w, 0);
-                    c.putImageData(grid41, 3 * w, 0);
-
-                    c.putImageData(grid12, 0, h);
-                    c.putImageData(grid32, 2 * w, h);
-                    c.putImageData(grid42, 3 * w, h);
-
-                    c.putImageData(grid13, 0, 2 * h);
-                    c.putImageData(grid23, w, 2 * h);
-                    c.putImageData(grid43, 3 * w, 2 * h);
-
-                    c.putImageData(grid14, 0, 3 * h);
-                    c.putImageData(grid24, w, 3 * h);
-                    c.putImageData(grid34, 2 * w, 3 * h);
-
-                    n >= 10 ? g = n : g = `0${n}`;
-                    
-                    let a = document.createElement('a');
                     a.href = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-                    a.download = `${g}.png`;
                     a.click();
-
-                    n++;
-                }
-            }
-        }
+                };
+                n++;
+            };
+        };
     });
