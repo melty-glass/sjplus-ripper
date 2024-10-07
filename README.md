@@ -10,5 +10,5 @@ A bit of code I wrote to automatically rip images from [Shonen Jump+](https://sh
 
 ## Notes:
 
-- Don't worry about loading all images, that's not possible anyway since after a certain limit, the ones on the other side of where you're scrolling to will automatically unload. This script runs on each chapter's individual .json file.
+- This is just a little script I made so I could read chapters offline. Please don't reupload these chapters elsewhere so as to not get into legal trouble.
 - I haven't paid for any chapters so I'm not sure what happens if use this on one, lmk if it doesn't work 👍 It definitely won't work if you haven't paid for it though.
