@@ -1,5 +1,5 @@
 obj = JSON.parse(document.querySelector('#episode-json').getAttribute('data-value'));
-const pages = obj.readableProduct.pageStructure.pages;
+pages = obj.readableProduct.pageStructure.pages;
 n = 1;
 
 for (i of pages) {
